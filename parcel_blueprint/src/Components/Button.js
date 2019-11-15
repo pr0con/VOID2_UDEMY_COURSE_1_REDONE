@@ -14,7 +14,6 @@ const StyledButton = styled.div`
 	justify-content: center;
 	margin-left: .5rem;	
 
-	.icon-button,
 	.grey-button,
 	.white-button,
 	.red-button {
