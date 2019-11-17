@@ -11,6 +11,8 @@ const StyledApp = styled.div`
 
 import { NavBar } from './NavBar.js';
 import { Dashboard } from './Dashboard.js';
+import { LogInModal } from './Modals/LogInModal.js';
+import { SignUpModal } from './Modals/SignUpModal.js';
 
 export function App() {
 	return(
@@ -18,6 +20,7 @@ export function App() {
 			<AppProvider>
 				<NavBar />
 				<Dashboard />
+				<SignUpModal />
 			</AppProvider>
 		</StyledApp>
 	)

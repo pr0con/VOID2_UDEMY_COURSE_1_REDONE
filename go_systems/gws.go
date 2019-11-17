@@ -13,8 +13,10 @@ import (
 	//"github.com/gorilla/handlers"
 	"github.com/gorilla/websocket"
 	
-	//Our Packages	
+	//Our Packages
+	"procon_jwt"
 	"procon_data"
+	"procon_config"	
 )
 
 var addr = flag.String("addr", "0.0.0.0:1200", "http service address")
@@ -48,7 +50,17 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			switch(in.Type) {
 				case "register-client-msg":
 					procon_data.SendMsg("^vAr^", "server-ws-connect-success-msg", c.Uuid , c);
+					jwt, err := procon_jwt.GenerateJWT(procon_config.PrivKeyFile, "fake nameame","fake alias","fake@email.com","Admin");
+					if err != nil { fmt.Println("JWT Generation Failed") }else {
+						procon_data.SendMsg("^vAr^", "server-ws-connect-success-jwt", jwt , c);
+					}						
 					break;
+				case "test-jwt-message":
+					valid, err := procon_jwt.ValidateJWT(procon_config.PubKeyFile,in.Jwt)
+					fmt.Println(in.Jwt);
+					if err != nil { fmt.Println(err); procon_data.SendMsg("^vAr^", "jwt-token-invalid",err.Error(), c) } else if (err == nil && valid ) {	
+						fmt.Println("VALID JWT");
+					}					
 				default:
 					break;					
 			}
