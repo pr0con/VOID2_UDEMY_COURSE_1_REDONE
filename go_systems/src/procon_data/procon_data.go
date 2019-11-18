@@ -22,3 +22,4 @@ func SendMsg(j string, t string, d string, c *websocket.Conn) {
 	//mm, _ := json.Marshal(m);
 	//fmt.Println(string(mm));
 }
+

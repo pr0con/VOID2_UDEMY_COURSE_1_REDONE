@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"flag"
 	"net/http"
+
 	
 	"github.com/google/uuid"
 	
@@ -60,7 +61,10 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 					fmt.Println(in.Jwt);
 					if err != nil { fmt.Println(err); procon_data.SendMsg("^vAr^", "jwt-token-invalid",err.Error(), c) } else if (err == nil && valid ) {	
 						fmt.Println("VALID JWT");
-					}					
+					}
+					break;
+				case "create-user":
+					fmt.Println(in.Data)
 				default:
 					break;					
 			}

@@ -16,7 +16,7 @@ export default function(props) {
 	
 	const [ wsId, setWsId ] = useState('');
 	const [ jwt, setJwt ] = useState(null);
-	
+		
 	const request = async (jwt,type,data) => {
 		let payload = {
 			jwt,
