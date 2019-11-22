@@ -97,6 +97,8 @@ const StyledNavBar = styled.div`
 import { Button } from './Button.js';
 
 export function NavBar() {
+	const { setModal } = useContext(AppContext);
+	
 	return(
 		<StyledNavBar>
 			<div id="styled-navbar-content" >
@@ -112,8 +114,8 @@ export function NavBar() {
 				
 				<div id="navbar-divider"></div>
 				
-				<Button btype="white-button" text="Login" icon="" />
-				<Button btype="red-button" text="Sign Up!" icon="" />
+				<Button btype="white-button" text="Login" icon="" onClick={(e) => setModal('login')} />
+				<Button btype="red-button" text="Sign Up!" icon="" onClick={(e) => setModal('signup')} />
 			</div>
 		</StyledNavBar>
 	)

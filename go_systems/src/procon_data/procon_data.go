@@ -23,3 +23,17 @@ func SendMsg(j string, t string, d string, c *websocket.Conn) {
 	//fmt.Println(string(mm));
 }
 
+type TryUser struct {
+    Email    string     `json:"user"`
+    Password string     `json:"password"`
+}
+
+type AUser struct {
+   User     string 		`json:"user"`
+   Role		string		`json:"role"`
+   FullName string		`json:"fullname"`
+   Password string		`json:"password"`   	
+}
+
+
+

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 //Hook based context :: from default function export
 import AppProvider from './AppContext.js';
+import { AppContext } from './AppContext.js';
 
 const StyledApp = styled.div`
 
@@ -18,9 +19,16 @@ export function App() {
 	return(
 		<StyledApp>
 			<AppProvider>
-				<NavBar />
-				<Dashboard />
-				<SignUpModal />
+				<AppContext.Consumer>
+				{({ modal }) => (
+					<>
+						<NavBar />
+						<Dashboard /> 
+						{ modal == 'login' && <LogInModal /> }
+						{ modal == 'signup' && <SignUpModal /> }
+					</>
+				)}
+				</AppContext.Consumer>
 			</AppProvider>
 		</StyledApp>
 	)

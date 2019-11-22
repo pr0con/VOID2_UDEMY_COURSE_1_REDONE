@@ -17,6 +17,8 @@ import (
 	//Our Packages
 	"procon_jwt"
 	"procon_data"
+	"procon_utils"
+	"procon_mongo"
 	"procon_config"	
 )
 
@@ -65,6 +67,12 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 					break;
 				case "create-user":
 					fmt.Println(in.Data)
+					usr, pwd, err := procon_utils.B64DecodeTryUser(in.Data);
+					if err != nil { fmt.Println(err);  } else {  fmt.Println(string(usr), string(pwd))  }
+					
+					res := procon_mongo.CreateUser(in.Data, c)
+					fmt.Println("Mongo Function Result: ", res)
+					//Change Role in mongo package!!!!						
 				default:
 					break;					
 			}
@@ -73,6 +81,8 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+	
+	
 	
 	//look into subrouter stuffs
 	r := mux.NewRouter()	

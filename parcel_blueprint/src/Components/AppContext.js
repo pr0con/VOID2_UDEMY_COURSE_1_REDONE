@@ -16,6 +16,8 @@ export default function(props) {
 	
 	const [ wsId, setWsId ] = useState('');
 	const [ jwt, setJwt ] = useState(null);
+	
+	const [ modal, setModal ] = useState('none');
 		
 	const request = async (jwt,type,data) => {
 		let payload = {
@@ -88,6 +90,7 @@ export default function(props) {
 			request,
 			wsId,
 			jwt,
+			modal, setModal
 		}}>
 			{ props.children }
 		</AppContext.Provider>

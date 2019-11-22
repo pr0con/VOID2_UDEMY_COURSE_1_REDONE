@@ -143,12 +143,14 @@ const StyledLogInModal = styled.div`
 `;
 
 export function LogInModal() {
+	const { request, setModal } = useContext(AppContext);
+	
 	return(
 		<StyledLogInModal>
 			<div id="login-center-dialog">
 				<div id="login-center-dialog-header">
 					<div id="login-center-dialog-header-text">Log In</div>
-					<div id="login-center-dialog-header-close"></div>
+					<div id="login-center-dialog-header-close" onClick={(e) => setModal('none')} ></div>
 				</div>
 				
 				<div id="login-center-dialog-form">

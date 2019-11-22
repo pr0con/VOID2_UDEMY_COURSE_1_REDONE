@@ -21,7 +21,12 @@ const (
 	
 	KeyCertPath = "/var/www/keycertz/"
 	PrivKeyPath = "/var/www/keycertz/mykey.pem"
-	PubKeyPath  = "/var/www/keycertz/mykey.pub"			
+	PubKeyPath  = "/var/www/keycertz/mykey.pub"	
+
+	MongoHost = "127.0.0.1"
+	MongoUser = "mongod"
+	MongoPassword = "SOMEHARDPASSWORD"
+	MongoDb = "admin"						
 )
 
 func init() {

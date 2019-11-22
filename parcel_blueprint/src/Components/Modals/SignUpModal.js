@@ -185,7 +185,7 @@ const StyledSignUpModal = styled.div`
 `;
 
 export function SignUpModal() {
-	const { request } = useContext(AppContext)
+	const { request, setModal } = useContext(AppContext)
 	
 	const [ u, setU ] = useState(''); //username
 	const [ e, setE ] = useState(''); //email
@@ -235,7 +235,7 @@ export function SignUpModal() {
 					
 		let create_user = {
 			name: u,
-			email: e,
+			email: btoa(e),
 			password: btoa(p),
 		}
 		
@@ -248,7 +248,7 @@ export function SignUpModal() {
 			<div id="sign-up-center-dialog">
 				<div id="sign-up-center-dialog-header">
 					<div id="sign-up-center-dialog-header-text">Sign Up</div>
-					<div id="sign-up-center-dialog-header-close"></div>
+					<div id="sign-up-center-dialog-header-close" onClick={(e) => setModal('none')} ></div>
 				
 				</div>
 				
