@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { AppContext } from '../AppContext.js';
 
@@ -61,6 +61,17 @@ const StyledLogInModal = styled.div`
 		}
 		#login-center-dialog-form {
 			padding: 24px 24px 24px 24px;
+			
+			#login-errors {
+				padding: 1.6rem;
+				font-size: 1.5rem;
+				border-radius: .2rem;
+				border: 1px solid
+				border-color: transparent;
+				background-color: #faebeb;
+				color: #521822;	
+				margin-bottom: .5rem;		
+			}
 			
 			#login-center-dialog-form-email-field,
 			#login-center-dialog-form-password-field {
@@ -143,7 +154,20 @@ const StyledLogInModal = styled.div`
 `;
 
 export function LogInModal() {
-	const { request, setModal } = useContext(AppContext);
+	const { request, setModal, loginErrMsg } = useContext(AppContext);
+	
+	const [ e, setE ] = useState(''); //email
+	const [ p, setP ] = useState(''); //password...	
+	
+	
+	const handleSubmit = async() => {
+		let login_user = {
+			email: btoa(e),
+			password: btoa(p),
+		}
+		
+		request("vAr","login-user", JSON.stringify(login_user));		
+	}
 	
 	return(
 		<StyledLogInModal>
@@ -154,9 +178,11 @@ export function LogInModal() {
 				</div>
 				
 				<div id="login-center-dialog-form">
-					<span id="login-center-dialog-form-email-field"><input type="text" placeholder="Email" /></span>
-					<span id="login-center-dialog-form-password-field"><input type="password" placeholder="Password" /></span>
-					<div id="submit-login-form-btn">Login</div>
+					{ loginErrMsg !== '' && <div id="login-errors">{ loginErrMsg }</div> }
+				
+					<span id="login-center-dialog-form-email-field"><input type="text" placeholder="Email" onChange={(e) => setE(e.target.value)}/></span>
+					<span id="login-center-dialog-form-password-field"><input type="password" placeholder="Password" onChange={(e) => setP(e.target.value)}/></span>
+					<div id="submit-login-form-btn" onClick={(e) => handleSubmit()}>Login</div>
 				</div>
 			</div>
 		</StyledLogInModal>

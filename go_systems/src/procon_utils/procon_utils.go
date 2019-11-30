@@ -33,6 +33,13 @@ func GenerateUserPassword( pwdstr string ) (string) {
 	return string(hp)
 }
 
+//used in procon_mongo.MongoTryUser
+func ValidateUserPassword( tryPass []byte, byteHash []byte) (bool,error) {
+	err := bcrypt.CompareHashAndPassword(byteHash, tryPass)
+	if err != nil { return false,err } else {  return true,nil }
+}
+
+
 func SendMsg(j string, t string, d string, c *websocket.Conn) {
 	m := procon_data.Msg{j, t, d};
 	if err := c.WriteJSON(m); err != nil {

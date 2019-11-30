@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"flag"
 	"net/http"
-
+	"encoding/json"
 	
 	"github.com/google/uuid"
 	
@@ -52,27 +52,35 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 			}	
 			switch(in.Type) {
 				case "register-client-msg":
-					procon_data.SendMsg("^vAr^", "server-ws-connect-success-msg", c.Uuid , c);
-					jwt, err := procon_jwt.GenerateJWT(procon_config.PrivKeyFile, "fake nameame","fake alias","fake@email.com","Admin");
-					if err != nil { fmt.Println("JWT Generation Failed") }else {
-						procon_data.SendMsg("^vAr^", "server-ws-connect-success-jwt", jwt , c);
-					}						
-					break;
-				case "test-jwt-message":
-					valid, err := procon_jwt.ValidateJWT(procon_config.PubKeyFile,in.Jwt)
-					fmt.Println(in.Jwt);
-					if err != nil { fmt.Println(err); procon_data.SendMsg("^vAr^", "jwt-token-invalid",err.Error(), c) } else if (err == nil && valid ) {	
-						fmt.Println("VALID JWT");
-					}
+					procon_data.SendMsg("^vAr^", "server-ws-connect-success-msg", c.Uuid , c);						
 					break;
 				case "create-user":
-					fmt.Println(in.Data)
-					usr, pwd, err := procon_utils.B64DecodeTryUser(in.Data);
-					if err != nil { fmt.Println(err);  } else {  fmt.Println(string(usr), string(pwd))  }
-					
 					res := procon_mongo.CreateUser(in.Data, c)
 					fmt.Println("Mongo Function Result: ", res)
-					//Change Role in mongo package!!!!						
+					//Change Role in mongo package!!!!	
+					break;
+				case "login-user":
+					usr, pwd, err := procon_utils.B64DecodeTryUser(in.Data);
+					if err != nil { fmt.Println(err);  } else {   	
+						vres, auser, err := procon_mongo.MongoTryUser(usr,pwd);
+						if err != nil { fmt.Println(err) } else if vres == true {
+							auser.Password = "F00"
+							
+							jauser,err := json.Marshal(auser); if err != nil { fmt.Println("error marshaling AUser.") }else {
+								jwt, err := procon_jwt.GenerateJWT(procon_config.PrivKeyFile, auser.Name, "You Implement", auser.Email, auser.Role)
+								if err != nil { fmt.Println(err); } else {  procon_data.SendMsg(jwt, "server-ws-connect-success-jwt", string(jauser), c ); }
+							}	
+						}
+						if vres == false {
+							procon_data.SendMsg("^vAr^", "server-ws-connect-login-failure", "User Not Found or Invalid Credentials", c );
+						}
+					}
+				case "validate-jwt":
+					valid, err := procon_jwt.ValidateJWT(procon_config.PubKeyFile, in.Jwt)
+					fmt.Println(in.Jwt);
+					if err != nil  {  fmt.Println(err); procon_data.SendMsg("^vAr^", "jwt-token-invalid", err.Error(), c) } else if (err == nil && valid) {
+						fmt.Println("Valid JWT")
+					}									
 				default:
 					break;					
 			}

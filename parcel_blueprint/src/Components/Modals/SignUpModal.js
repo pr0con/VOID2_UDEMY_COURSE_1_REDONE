@@ -187,7 +187,7 @@ const StyledSignUpModal = styled.div`
 export function SignUpModal() {
 	const { request, setModal } = useContext(AppContext)
 	
-	const [ u, setU ] = useState(''); //username
+	const [ u, setU ] = useState(''); //name
 	const [ e, setE ] = useState(''); //email
 	const [ p, setP ] = useState(''); //password...
 		

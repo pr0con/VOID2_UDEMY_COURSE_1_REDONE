@@ -24,14 +24,14 @@ func SendMsg(j string, t string, d string, c *websocket.Conn) {
 }
 
 type TryUser struct {
-    Email    string     `json:"user"`
+    Email    string     `json:"email"`
     Password string     `json:"password"`
 }
 
 type AUser struct {
-   User     string 		`json:"user"`
+   Email    string 		`json:"email"`
    Role		string		`json:"role"`
-   FullName string		`json:"fullname"`
+   Name     string		`json:"name"`
    Password string		`json:"password"`   	
 }
 

@@ -16,9 +16,11 @@ export default function(props) {
 	
 	const [ wsId, setWsId ] = useState('');
 	const [ jwt, setJwt ] = useState(null);
+	const [ user, setUser ] = useState('');
 	
 	const [ modal, setModal ] = useState('none');
-		
+	const [ loginErrMsg, setLoginErrMsg ] = useState('');
+			
 	const request = async (jwt,type,data) => {
 		let payload = {
 			jwt,
@@ -59,8 +61,20 @@ export default function(props) {
 						setWsId(tjo['data']);				
 						break;
 					case "server-ws-connect-success-jwt":
-						setJwt(tjo['data']);
-						request(tjo['data'],'test-jwt-message','noop');
+						setJwt(tjo['jwt']);
+						let usr = JSON.parse(tjo['data']);
+						setUser(usr);
+						request(tjo['jwt'],'validate-jwt','noop');
+						setModal('none');
+						break;
+					case "server-ws-connect-login-failure":
+						setLoginErrMsg(tjo['data']);
+						break;
+					case "user-alredy-exists":
+						alert("Handle Me: user already exists");
+						break;
+					case "user-created-successfully":
+						setModal('none');
 						break;
 					default:
 						break;
@@ -90,7 +104,10 @@ export default function(props) {
 			request,
 			wsId,
 			jwt,
-			modal, setModal
+			user,
+			modal, 
+			setModal,
+			loginErrMsg
 		}}>
 			{ props.children }
 		</AppContext.Provider>
