@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { AppContext } from './AppContext.js';
 
@@ -90,14 +90,31 @@ const StyledNavBar = styled.div`
 			margin-right: 1.5rem;
 			border-left: 1px solid #dedfe0;		
 		}
-					
+		
+		#nav-bar-profile-icon {
+			width: 4.5rem;
+			height: 4.5rem;
+			background: #686f7a;
+			-webkit-mask: url(/icons/16px/user.svg) no-repeat center;
+			mask: url(/icons/16px/user.svg) no-repeat center;	
+			
+			&:hover{
+				cursor:pointer;
+			}	
+		}			
 	}
 `;
 
 import { Button } from './Button.js';
 
+import { DropMenuLeft } from './DropMenuLeft.js';
+import { DropMenuRight } from './DropMenuRight.js';
+
+
 export function NavBar() {
-	const { setModal } = useContext(AppContext);
+	const { setModal, loading, verifiedJwt } = useContext(AppContext);
+	
+	useEffect(() => {},[loading, verifiedJwt])
 	
 	return(
 		<StyledNavBar>
@@ -114,8 +131,17 @@ export function NavBar() {
 				
 				<div id="navbar-divider"></div>
 				
-				<Button btype="white-button" text="Login" icon="" onClick={(e) => setModal('login')} />
-				<Button btype="red-button" text="Sign Up!" icon="" onClick={(e) => setModal('signup')} />
+				{ (loading === false && verifiedJwt == null) &&
+					<>
+						<Button btype="white-button" text="Login" icon="" onClick={(e) => setModal('login')} />
+						<Button btype="red-button" text="Sign Up!" icon="" onClick={(e) => setModal('signup')} />
+					</>
+				}
+				
+				{ verifiedJwt && <div id="nav-bar-profile-icon"></div> }
+				
+				<DropMenuLeft />
+				<DropMenuRight />
 			</div>
 		</StyledNavBar>
 	)

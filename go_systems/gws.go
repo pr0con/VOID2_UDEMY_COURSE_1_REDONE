@@ -75,12 +75,18 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 							procon_data.SendMsg("^vAr^", "server-ws-connect-login-failure", "User Not Found or Invalid Credentials", c );
 						}
 					}
-				case "validate-jwt":
+				case "validate-jwt": fallthrough
+				case "validate-stored-jwt":
 					valid, err := procon_jwt.ValidateJWT(procon_config.PubKeyFile, in.Jwt)
 					fmt.Println(in.Jwt);
-					if err != nil  {  fmt.Println(err); procon_data.SendMsg("^vAr^", "jwt-token-invalid", err.Error(), c) } else if (err == nil && valid) {
-						fmt.Println("Valid JWT")
-					}									
+					if err != nil  {  
+						fmt.Println(err); 
+						if in.Type == "validate-jwt" { procon_data.SendMsg("^vAr^", "jwt-token-invalid", err.Error(), c) }
+						if in.Type == "validate-stored-jwt" { procon_data.SendMsg("^vAr^", "stored-jwt-token-invalid", err.Error(), c) }
+					} else if (err == nil && valid) {
+						if in.Type == "validate-jwt" {  procon_data.SendMsg("^vAr^", "server-ws-connect-jwt-verified", "noop", c); }
+						if in.Type == "validate-stored-jwt" {  procon_data.SendMsg("^vAr^", "server-ws-connect-stored-jwt-verified", "noop", c); }
+					}								
 				default:
 					break;					
 			}

@@ -15,11 +15,15 @@ export default function(props) {
 	const [ ws, setWs ] = useState(null); 
 	
 	const [ wsId, setWsId ] = useState('');
-	const [ jwt, setJwt ] = useState(null);
+	const [ jwt, setJwt ] = useState("^vAr^");
 	const [ user, setUser ] = useState('');
+	const [ verifiedJwt, setVerifiedJwt ] = useState(null);
 	
 	const [ modal, setModal ] = useState('none');
 	const [ loginErrMsg, setLoginErrMsg ] = useState('');
+	
+	const [ loading, setLoading ] = useState(true);
+	
 			
 	const request = async (jwt,type,data) => {
 		let payload = {
@@ -76,6 +80,23 @@ export default function(props) {
 					case "user-created-successfully":
 						setModal('none');
 						break;
+					case "server-ws-connect-jwt-verified":
+						setVerifiedJwt(true);
+						break;
+					case "server-ws-connect-stored-jwt-verified":
+						setVerifiedJwt(true);
+						setJwt(window.localStorage.getItem('Pr0conJwt'));
+						let storedUser = window.localStorage.getItem('User')
+						setUser(JSON.parse(storedUser));	
+						setLoading(false);						
+						break;
+					case "stored-jwt-token-invalid":
+						setJwt("^vAr^");
+						setUser(null);
+						setLoading(false);
+						if(window.localStorage.getItem('Pr0conJwt') !== null) { window.localStorage.removeItem('Pr0conJwt');  }
+						break;
+					
 					default:
 						break;
 				}
@@ -97,6 +118,39 @@ export default function(props) {
 		if(ws !== null && rs === 0 ) { configureWebsocket(); heartbeat(ws); }		
 	}, [ws,rs])	
 	
+	useEffect(() => {
+	    if (jwt !== '^vAr^' && verifiedJwt) { 
+		    console.log("JWT has been verified..."+verifiedJwt); 
+		    window.localStorage.setItem('Pr0conJwt',jwt); 
+		    
+		    //extract and store user...
+		    window.localStorage.setItem('User',JSON.stringify(user));
+		}		
+	},[verifiedJwt])
+	
+	useEffect(() => {
+		if(rs === 1 ) {
+			let storedJwt = window.localStorage.getItem('Pr0conJwt');
+			if(storedJwt !== null) {
+				let psjwt = JSON.parse(atob(storedJwt.split('.')[1]));
+				let exp = new Date(psjwt['exp'] * 1000).toUTCString();
+				let now = new Date(Date.now()).toUTCString();
+				console.log(now);
+				console.log(exp);
+				if(exp > now) {
+					console.log('Stored Jwt Good');
+					request(storedJwt,'validate-stored-jwt','noop');
+				}
+				if(exp < now) {
+					setLoading(false);
+					window.localStorage.removeItem('Pr0conJwt'); 
+				}
+			} else if (storedJwt === null) {
+				setLoading(false);
+			}
+		}		
+	},[rs])	
+	
 	return(
 		<AppContext.Provider value={{
 			test, setTest,
@@ -107,7 +161,9 @@ export default function(props) {
 			user,
 			modal, 
 			setModal,
-			loginErrMsg
+			loginErrMsg,
+			loading,
+			verifiedJwt,
 		}}>
 			{ props.children }
 		</AppContext.Provider>
