@@ -1,6 +1,6 @@
 package main
 
-import (
+import(
 	//Native Packages
 	"fmt"
 	"flag"
@@ -19,7 +19,7 @@ import (
 	"procon_data"
 	"procon_utils"
 	"procon_mongo"
-	"procon_config"	
+	"procon_config"
 )
 
 var addr = flag.String("addr", "0.0.0.0:1200", "http service address")
@@ -86,16 +86,28 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 					} else if (err == nil && valid) {
 						if in.Type == "validate-jwt" {  procon_data.SendMsg("^vAr^", "server-ws-connect-jwt-verified", "noop", c); }
 						if in.Type == "validate-stored-jwt" {  procon_data.SendMsg("^vAr^", "server-ws-connect-stored-jwt-verified", "noop", c); }
-					}								
+					}
+													
 				default:
 					break;					
 			}
 		}		
 }
 
+func handleUI(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	component := params["component"]
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json");
+	fmt.Println(component);
+
+	procon_mongo.MongoGetUIComponent(component, w)	
+}
+
+
 func main() {
 	flag.Parse()
-	
 	
 	
 	//look into subrouter stuffs
@@ -103,6 +115,9 @@ func main() {
 	
 	//Websocket API
 	r.HandleFunc("/ws", handleAPI)
+	
+	//Resit API
+	r.HandleFunc("/rest/api/ui/{component}", handleUI)
 	
 	//Rest API
 	http.ListenAndServeTLS(*addr,"/etc/letsencrypt/live/void.pr0con.com/cert.pem", "/etc/letsencrypt/live/void.pr0con.com/privkey.pem", r)			

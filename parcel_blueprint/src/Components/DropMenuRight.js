@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { AppContext } from './AppContext.js';
 
 const StyledDropMenuRight = styled.div`
 	position: absolute;
@@ -17,6 +18,9 @@ const StyledDropMenuRight = styled.div`
 	font-size: 13px;
 	background: #fff;
 	padding: 15px 0 15px 0;
+
+	font-family: 'Hackman';
+	-moz-osx-font-smoothing: grayscale;
 	
 	&:after {
 		left: auto;
@@ -31,12 +35,52 @@ const StyledDropMenuRight = styled.div`
 	    position: absolute;
 	    width: 0;
 	}
+	
+	.text-link-item {
+		height: 4.2rem;
+		color: #007791;
+		font-size: 1.5rem;
+		font-weight: 600;
+		padding: 10px 22px;
+		width: 100%;
+		position: relative;
+		line-height: 2.2rem;
+	}
+	.text-link-item:hover {
+		background: #f2f3f5;
+		cursor:pointer;
+	}	
+`;
+
+const DynamicIcon = styled.span`
+	display:inline-block;
+	background: #a1a7b3;
+	width: 2rem;
+	height: 2rem;
+	mask: ${props => `url(${props.svgIconUrl}) no-repeat center center;`});
+	mask-size: 2rem;
+	margin-right: 1.5rem;
 `;
 
 export function DropMenuRight() {
+	const { dropMenuRight, setDropMenu, doLogOut } = useContext(AppContext)
+
+	const doAction = async(action, parameter) => {
+		switch(action) {
+			case "log-out":
+				doLogOut();
+				setDropMenu('none');
+				break;	
+			default:
+				break;
+		}
+	}
+	
 	return(
 		<StyledDropMenuRight>	
-			drop menu right
+			{ (dropMenuRight !== null && dropMenuRight.length > 0) && dropMenuRight.map((el, i) => (
+				<div key={i} className={el.type} onClick={(e) => doAction(el.action, el.parameter)}><DynamicIcon svgIconUrl={`/icons/20px/${el.icon}.svg`} />{ el.text }</div>
+			))}
 		</StyledDropMenuRight>
 	)
 }

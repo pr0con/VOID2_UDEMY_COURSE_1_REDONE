@@ -3,6 +3,7 @@ package procon_mongo
 import (
 	"fmt"
 	"context"
+	"net/http"
 	"encoding/json"
 	
 	"github.com/gorilla/websocket"
@@ -115,4 +116,14 @@ func MongoTryUser(e []byte, p []byte) (bool, *procon_data.AUser, error) {
     }		    
 }
 
+func MongoGetUIComponent(component string, w http.ResponseWriter ) {
+	var xdoc map[string]interface{}
+	collection := client.Database("api").Collection("ui");		
+	
+	filter := bson.D{{"component", component}}
+	
+	if err  := collection.FindOne(ctx, filter).Decode(&xdoc); err != nil { fmt.Println(err) } else {
+		json.NewEncoder(w).Encode(xdoc)  
+	}
+}
 

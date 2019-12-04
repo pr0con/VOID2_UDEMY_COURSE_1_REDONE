@@ -112,7 +112,7 @@ import { DropMenuRight } from './DropMenuRight.js';
 
 
 export function NavBar() {
-	const { setModal, loading, verifiedJwt } = useContext(AppContext);
+	const { setModal, loading, verifiedJwt, dropMenu, setDropMenu } = useContext(AppContext);
 	
 	useEffect(() => {},[loading, verifiedJwt])
 	
@@ -121,7 +121,7 @@ export function NavBar() {
 			<div id="styled-navbar-content" >
 				<div id="styled-navbar-content-icon"></div>
 				<div id="styled-navbar-content-title">Foo Demy2</div>
-				<Button btype="icon-button" text="Resources" icon="/icons/20px/box.svg" />
+				<Button btype="icon-button" text="Resources" icon="/icons/20px/box.svg" onMouseOver={(e) => setDropMenu('drop-menu-left')}/>
 				<input type="text" id="navbar-search-input" />
 				<div id="navbar-search-input-submit-btn">
 					<svg focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path><path fill="none" d="M0 0h24v24H0z"></path></svg>
@@ -138,10 +138,10 @@ export function NavBar() {
 					</>
 				}
 				
-				{ verifiedJwt && <div id="nav-bar-profile-icon"></div> }
+				{ verifiedJwt && <div id="nav-bar-profile-icon" onMouseOver={(e) => setDropMenu('drop-menu-right')}></div> }
 				
-				<DropMenuLeft />
-				<DropMenuRight />
+				{ dropMenu === "drop-menu-left" &&  <DropMenuLeft /> }
+				{ dropMenu === "drop-menu-right" && <DropMenuRight /> }
 			</div>
 		</StyledNavBar>
 	)

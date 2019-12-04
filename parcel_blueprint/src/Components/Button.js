@@ -94,14 +94,14 @@ const StyledButton = styled.div`
 	}
 `;
 
-export function Button({ btype, text, icon, onClick }) {
+export function Button({ btype, text, icon, onClick, onMouseOver }) {
 	
 	const handleClick = async() => {
 		onClick();
 	}
 	
 	return(
-		<StyledButton btype={btype} icon={icon} onClick={(e) => handleClick()}>
+		<StyledButton btype={btype} icon={icon} onClick={(e) => handleClick()} onMouseOver={onMouseOver}  >
 			{ btype === "icon-button" && <div className={`${btype} icon`}></div> }
 			<div className={`${btype} text`}>{text}</div>	
 		</StyledButton>

@@ -24,6 +24,11 @@ export default function(props) {
 	
 	const [ loading, setLoading ] = useState(true);
 	
+	const [ dropMenu, setDropMenu ] = useState('none');
+	
+	const [ dropMenuLeft, setDropMenuLeft ] = useState(null);
+	const [ dropMenuRight, setDropMenuRight ] = useState(null);
+	
 			
 	const request = async (jwt,type,data) => {
 		let payload = {
@@ -151,6 +156,26 @@ export default function(props) {
 		}		
 	},[rs])	
 	
+	const doLogOut = async() => {
+		setJwt('^vAr^');
+		setUser(null);
+		setVerifiedJwt(null)
+		window.localStorage.removeItem('Pr0conJwt'); 
+	}	
+	
+	useEffect(() => {
+		if (loading === false) {
+			const fetchData = async () => {
+				const resL = await axios('https://void.pr0con.com:1200/rest/api/ui/navbar-drop-menu-resources');
+				const resR = await axios('https://void.pr0con.com:1200/rest/api/ui/navbar-drop-menu-profile');
+				
+				setDropMenuLeft(resL.data.elements);
+				setDropMenuRight(resR.data.elements);
+			}
+			fetchData();
+		}
+	},[loading]);
+	
 	return(
 		<AppContext.Provider value={{
 			test, setTest,
@@ -164,6 +189,14 @@ export default function(props) {
 			loginErrMsg,
 			loading,
 			verifiedJwt,
+			
+			dropMenu, 
+			setDropMenu,
+			
+			dropMenuLeft,
+			dropMenuRight, 
+			
+			doLogOut,
 		}}>
 			{ props.children }
 		</AppContext.Provider>
