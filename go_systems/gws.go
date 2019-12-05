@@ -16,6 +16,7 @@ import(
 	
 	//Our Packages
 	"procon_jwt"
+	"procon_pty"
 	"procon_data"
 	"procon_utils"
 	"procon_mongo"
@@ -115,6 +116,7 @@ func main() {
 	
 	//Websocket API
 	r.HandleFunc("/ws", handleAPI)
+	r.HandleFunc("/pty", procon_pty.HandlePty)
 	
 	//Resit API
 	r.HandleFunc("/rest/api/ui/{component}", handleUI)

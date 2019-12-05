@@ -29,6 +29,9 @@ export default function(props) {
 	const [ dropMenuLeft, setDropMenuLeft ] = useState(null);
 	const [ dropMenuRight, setDropMenuRight ] = useState(null);
 	
+	
+	const [ prismData, setPrismData ] = useState('Default Prism Data');
+	const [ prismDataPath, setPrismDataPath ] = useState('Welcome Message....');
 			
 	const request = async (jwt,type,data) => {
 		let payload = {
@@ -197,6 +200,9 @@ export default function(props) {
 			dropMenuRight, 
 			
 			doLogOut,
+			
+			prismData,
+			prismDataPath,
 		}}>
 			{ props.children }
 		</AppContext.Provider>
