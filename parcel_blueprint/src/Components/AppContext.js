@@ -30,8 +30,15 @@ export default function(props) {
 	const [ dropMenuRight, setDropMenuRight ] = useState(null);
 	
 	
+	const [ backEnd, setBackEnd ] = useState(null);
+	const [ frontEnd, setFrontEnd ] = useState(null);
+	const [ documentation, setDocumentation ] = useState(null);
+	
 	const [ prismData, setPrismData ] = useState('Default Prism Data');
 	const [ prismDataPath, setPrismDataPath ] = useState('Welcome Message....');
+	
+	
+	
 			
 	const request = async (jwt,type,data) => {
 		let payload = {
@@ -70,7 +77,12 @@ export default function(props) {
 				let tjo = JSON.parse(event.data);	
 				switch(tjo['type']) {
 					case "server-ws-connect-success-msg":
-						setWsId(tjo['data']);				
+						setWsId(tjo['data']);
+						
+						request('^vAr^','get-fs-path','/var/www/VFS/documentation');
+						request('^vAr^','get-fs-path','/var/www/VFS/frontend_code');
+						request('^vAr^','get-fs-path','/var/www/VFS/backend_code');
+										
 						break;
 					case "server-ws-connect-success-jwt":
 						setJwt(tjo['jwt']);
@@ -108,6 +120,19 @@ export default function(props) {
 					default:
 						break;
 				}
+				
+				switch(tjo['path']) {
+					case "/var/www/VFS/frontend_code":
+						setFrontEnd(tjo);
+						break;
+					case "/var/www/VFS/backend_code":
+						setBackEnd(tjo)
+						break
+					case "/var/www/VFS/documentation":
+						setDocumentation(tjo)
+						break;
+				}
+				
 			}
 			ws.onclose = function(close_event) {
 				console.log(close_event);
@@ -174,6 +199,7 @@ export default function(props) {
 				
 				setDropMenuLeft(resL.data.elements);
 				setDropMenuRight(resR.data.elements);
+				
 			}
 			fetchData();
 		}
@@ -200,6 +226,10 @@ export default function(props) {
 			dropMenuRight, 
 			
 			doLogOut,
+			
+			frontEnd,
+			backEnd,
+			documentation,
 			
 			prismData,
 			prismDataPath,

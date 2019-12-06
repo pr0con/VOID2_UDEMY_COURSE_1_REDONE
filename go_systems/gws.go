@@ -4,6 +4,7 @@ import(
 	//Native Packages
 	"fmt"
 	"flag"
+	"strings"
 	"net/http"
 	"encoding/json"
 	
@@ -21,6 +22,8 @@ import(
 	"procon_utils"
 	"procon_mongo"
 	"procon_config"
+	"procon_asyncq"
+	"procon_filesystem"
 )
 
 var addr = flag.String("addr", "0.0.0.0:1200", "http service address")
@@ -88,6 +91,17 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 						if in.Type == "validate-jwt" {  procon_data.SendMsg("^vAr^", "server-ws-connect-jwt-verified", "noop", c); }
 						if in.Type == "validate-stored-jwt" {  procon_data.SendMsg("^vAr^", "server-ws-connect-stored-jwt-verified", "noop", c); }
 					}
+				
+				case "get-fs-path":
+					fmt.Println(in.Data)
+				
+					if strings.HasPrefix(in.Data, "/var/www/VFS/")  {
+						tobj :=  procon_filesystem.NewGetFileSystemTask(in.Data, c);
+						procon_asyncq.TaskQueue <- tobj	
+					}
+					break;
+
+
 													
 				default:
 					break;					
@@ -109,7 +123,7 @@ func handleUI(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
-	
+	procon_asyncq.StartTaskDispatcher(9)
 	
 	//look into subrouter stuffs
 	r := mux.NewRouter()	
@@ -118,8 +132,9 @@ func main() {
 	r.HandleFunc("/ws", handleAPI)
 	r.HandleFunc("/pty", procon_pty.HandlePty)
 	
-	//Resit API
+	//Rest API
 	r.HandleFunc("/rest/api/ui/{component}", handleUI)
+	
 	
 	//Rest API
 	http.ListenAndServeTLS(*addr,"/etc/letsencrypt/live/void.pr0con.com/cert.pem", "/etc/letsencrypt/live/void.pr0con.com/privkey.pem", r)			

@@ -28,12 +28,15 @@ import { SignUpModal } from './Modals/SignUpModal.js';
 
 import { Loader } from './Loader.js';
 
+import { Documentation } from './Documentation.js';
+import { FileSystem } from './FileSystem.js';
+
 export function App() {
 	return(
 		<StyledApp>
 			<AppProvider>
 				<AppContext.Consumer>
-				{({ loading, modal, setDropMenu }) => (
+				{({ loading, modal, setDropMenu, frontEnd, backEnd }) => (
 					<>
 						<NavBar />
 						 
@@ -42,7 +45,9 @@ export function App() {
 						
 						<div id="app-content" onMouseOver={ (e) => setDropMenu('none') } >
 							<div id="app-content-left">
-							
+								<Documentation />
+								<FileSystem forWhat="Front End" fileSystemData={frontEnd} />
+								<FileSystem forWhat="Back End"  fileSystemData={backEnd} />
 							</div>
 
 							<div id="app-content-right">
