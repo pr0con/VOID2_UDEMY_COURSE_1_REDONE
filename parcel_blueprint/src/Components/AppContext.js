@@ -29,6 +29,7 @@ export default function(props) {
 	const [ dropMenuLeft, setDropMenuLeft ] = useState(null);
 	const [ dropMenuRight, setDropMenuRight ] = useState(null);
 	
+	const [ adminSidebar, setAdminSidebar ] = useState(null);
 	
 	const [ backEnd, setBackEnd ] = useState(null);
 	const [ frontEnd, setFrontEnd ] = useState(null);
@@ -38,6 +39,11 @@ export default function(props) {
 	const [ prismDataPath, setPrismDataPath ] = useState('Welcome Message....');
 	
 	
+	const [ mySqlDatabases , setMySqlDatabases ] = useState(null);
+	const [ showDatabaseOps, setShowDatabaseOps ] = useState(false);
+	
+			
+	const [ websocketClients, setWebsocketClients ] = useState(null);
 	
 			
 	const request = async (jwt,type,data) => {
@@ -116,7 +122,15 @@ export default function(props) {
 						setLoading(false);
 						if(window.localStorage.getItem('Pr0conJwt') !== null) { window.localStorage.removeItem('Pr0conJwt');  }
 						break;
-					
+					case "rtn-file-data":
+						setPrismData(tjo['data']);
+						break;
+					case "mysql-dbs-list":
+						setMySqlDatabases(JSON.parse(tjo['data']));
+						break;
+					case "websocket-client-list":
+						setWebsocketClients(JSON.parse(tjo['data']));
+						break;
 					default:
 						break;
 				}
@@ -200,6 +214,10 @@ export default function(props) {
 				setDropMenuLeft(resL.data.elements);
 				setDropMenuRight(resR.data.elements);
 				
+				//grab admin menu component from mongo
+				const asd = await axios('https://void.pr0con.com:1200/rest/api/ui/administration-sidbear');
+				setAdminSidebar(asd.data.elements);
+				
 			}
 			fetchData();
 		}
@@ -227,12 +245,20 @@ export default function(props) {
 			
 			doLogOut,
 			
+			adminSidebar,
 			frontEnd,
 			backEnd,
 			documentation,
 			
 			prismData,
 			prismDataPath,
+			setPrismDataPath,
+			
+			mySqlDatabases,
+			showDatabaseOps, 
+			setShowDatabaseOps,
+			
+			websocketClients,
 		}}>
 			{ props.children }
 		</AppContext.Provider>

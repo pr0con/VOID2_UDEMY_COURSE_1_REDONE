@@ -4,8 +4,10 @@ import(
 	//Native Packages
 	"fmt"
 	"flag"
+	"time"
 	"strings"
 	"net/http"
+	"io/ioutil"
 	"encoding/json"
 	
 	"github.com/google/uuid"
@@ -21,6 +23,7 @@ import(
 	"procon_data"
 	"procon_utils"
 	"procon_mongo"
+	"procon_mysql"
 	"procon_config"
 	"procon_asyncq"
 	"procon_filesystem"
@@ -28,6 +31,16 @@ import(
 
 var addr = flag.String("addr", "0.0.0.0:1200", "http service address")
 var upgrader = websocket.Upgrader{} // use default options
+
+
+type WsClients struct{
+	CC int
+	CIDS []string
+}
+
+var Table chan *WsClients;
+
+
 
 
 func handleAPI(w http.ResponseWriter, r *http.Request) {
@@ -45,12 +58,39 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 	//Modified Mux Websocket package Conn Struct in Conn.go
 	c.Uuid = "ws-"+id.String()		
 	
+	go func() {
+		//take control of WsClients pointer from channel
+		wscc := <- Table
+		wscc.CC++
+		wscc.CIDS = append(wscc.CIDS, c.Uuid)
+		
+		fmt.Println(wscc);
+		
+		Table <- wscc
+	}()
+		
+	
+	go func(Table chan *WsClients, c *websocket.Conn) {
+		for range time.Tick(time.Second * 5) {
+			wscc := <- Table
+			mcl, err := json.Marshal(wscc)
+			if err != nil { fmt.Println(err) } else {
+				procon_data.SendMsg("^vAr^", "websocket-client-list", string(mcl), c);
+			}
+			
+			Table <- wscc					
+		}	
+	}(Table, c)
+	
+	
+	
 	Loop:
 		for {
 			in := procon_data.Msg{}
 			
 			err := c.ReadJSON(&in)
 			if err != nil {
+				
 				c.Close()
 				break Loop
 			}	
@@ -100,7 +140,18 @@ func handleAPI(w http.ResponseWriter, r *http.Request) {
 						procon_asyncq.TaskQueue <- tobj	
 					}
 					break;
-
+				case "return-fs-path-data":
+					data, err := ioutil.ReadFile(in.Data);
+					if err != nil { fmt.Println(err); } else {
+						procon_data.SendMsg("vAr","rtn-file-data", string(data), c);
+					}
+					break;
+					
+				//Operations...	
+				case "get-mysql-databases":
+					tobj := procon_mysql.NewGetMysqlDbsTask(c);
+					procon_asyncq.TaskQueue <- tobj					
+					break;		
 
 													
 				default:
@@ -135,6 +186,11 @@ func main() {
 	//Rest API
 	r.HandleFunc("/rest/api/ui/{component}", handleUI)
 	
+
+	go func() {
+		Table = make(chan *WsClients);
+		Table <- new(WsClients)		
+	}()
 	
 	//Rest API
 	http.ListenAndServeTLS(*addr,"/etc/letsencrypt/live/void.pr0con.com/cert.pem", "/etc/letsencrypt/live/void.pr0con.com/privkey.pem", r)			

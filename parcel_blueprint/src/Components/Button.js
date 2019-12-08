@@ -1,11 +1,6 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 
-/* logic inside styled components for props
-	${({ btype }) => btype == "icon-button" && `
-		
-	`;
-*/
 
 const StyledButton = styled.div`
 	display: flex;
@@ -92,6 +87,10 @@ const StyledButton = styled.div`
 	:hover {
 		cursor:pointer;
 	}
+	
+	${({ btype }) => btype == "blue" && `
+		text-decoration: underline;
+	`}
 `;
 
 export function Button({ btype, text, icon, onClick, onMouseOver }) {
